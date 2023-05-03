@@ -34,6 +34,7 @@ using System.IO;
 
 namespace Spine {
 	public class XnaTextureLoader : TextureLoader {
+		public Func<string, Texture2D> LoadTexture;
 		GraphicsDevice device;
 		string[] textureLayerSuffixes = null;
 
@@ -59,7 +60,7 @@ namespace Spine {
 		}
 
 		public void Load (AtlasPage page, String path) {
-			Texture2D texture = Util.LoadTexture(device, path);
+			Texture2D texture = LoadTexture?.Invoke(path) ?? Util.LoadTexture(device, path);
 			page.width = texture.Width;
 			page.height = texture.Height;
 
@@ -70,7 +71,7 @@ namespace Spine {
 				textureLayersArray[0] = texture;
 				for (int layer = 1; layer < textureLayersArray.Length; ++layer) {
 					string layerPath = GetLayerName(path, textureLayerSuffixes[0], textureLayerSuffixes[layer]);
-					textureLayersArray[layer] = Util.LoadTexture(device, layerPath);
+					textureLayersArray[layer] = LoadTexture?.Invoke(path) ?? Util.LoadTexture(device, layerPath);
 				}
 				page.rendererObject = textureLayersArray;
 			}

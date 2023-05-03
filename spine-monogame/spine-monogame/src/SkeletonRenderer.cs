@@ -85,14 +85,21 @@ namespace Spine {
 		}
 
 		public void Begin () {
-			defaultBlendState = premultipliedAlpha ? BlendState.AlphaBlend : BlendState.NonPremultiplied;
-
-			device.RasterizerState = rasterizerState;
-			device.BlendState = defaultBlendState;
+			// Currently a stub because the GraphicsDevice modification
+			// that was previously done here has been moved to End().
+			// This is because the device state only needs to be applied when the buffer is submitted to the gpu,
+			// and the standard SpriteBatch also modifies the Device during rendering
+			// which meant it was problematic when trying to draw regular sprites and skeletons at the same time.
 		}
 
 		public void End () {
-			foreach (EffectPass pass in effect.CurrentTechnique.Passes) {
+
+			// Note: these are moved here from Begin.
+            defaultBlendState = premultipliedAlpha ? BlendState.AlphaBlend : BlendState.NonPremultiplied;
+            device.RasterizerState = rasterizerState;
+            device.BlendState = defaultBlendState;
+
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes) {
 				pass.Apply();
 				batcher.Draw(device);
 			}
